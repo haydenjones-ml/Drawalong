@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
         }
         
         // RENDERING CODE HERE
-        SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
     }
