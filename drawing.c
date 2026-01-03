@@ -5,6 +5,21 @@
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
+// Structs for UI elements and drawing app states
+typedef struct {
+    SDL_Color currColor;
+    SDL_Color previewColor;
+    bool isDrawing;
+    bool isErasing;
+    int mouseX, mouseY;
+} AppState;
+
+typedef struct {
+    SDL_Rect buttonBox;
+    SDL_Color buttonColor;
+    const char* label;
+} UIButton;
+
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         printf("SDL Init failed: %s\n", SDL_GetError());
