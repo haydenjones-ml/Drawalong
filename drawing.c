@@ -21,6 +21,14 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (NULL == renderer) {
+        printf("Failed to create renderer: %s\n", SDL_GetError());
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return -1;
+    }
+
     SDL_Event windowEvent;
     bool is_running = true;
 
@@ -31,7 +39,10 @@ int main(int argc, char* argv[]) {
             }
         }
         
-        // RENDERING CODE HERE 
+        // RENDERING CODE HERE
+        SDL_SetRenderDrawColor(renderer, 135, 206, 235, 255);
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
     }
 
     SDL_DestroyWindow(window);
