@@ -15,7 +15,7 @@ typedef struct {
     bool isDrawing;
     bool isErasing;
     int mouseX, mouseY;
-} AppState;
+} appState;
 
 typedef struct {
     SDL_Rect buttonBox;
@@ -47,6 +47,8 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    
+    // Note: You created this texture but are currently drawing directly to the renderer in the loop below.
     SDL_Texture *canvasTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     if (NULL == renderer) {
@@ -55,63 +57,84 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return -1;
     }
+    appState state = { .currColor = {0, 0, 0, 255}, .previewColor = {0, 0, 0, 255}, .isDrawing = false, .isErasing = false };
+    UIButton btnColor = { {10, 10, BUTTON_WIDTH, 30}, {100, 100, 100, 255}, "COLOR" };
+    UIButton btnErase = { {120, 10, BUTTON_WIDTH, 30}, {200, 200, 200, 255}, "ERASE" };
 
-    AppState state = { .currentColor = {0, 0, 0, 255}, .previewColor = {0, 0, 0, 255}, .isDrawing = false, .eraserMode = false };
-    
-    UIButton btnColor = { {10, 10, BTN_WIDTH, 30}, {100, 100, 100, 255}, "COLOR" };
-    UIButton btnErase = { {120, 10, BTN_WIDTH, 30}, {200, 200, 200, 255}, "ERASE" };
-
-    SDL_Event windowEvent;
     bool is_running = true;
-    SDL_Event AppEvent;
+    SDL_Event AppEvent; 
     // Mouse = Draw; E = Toggle Erase
 
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderPresent(renderer);
 
     while (is_running) {
-        while (SDL_PollEvent(&windowEvent)) {
-            if (windowEvent.type == SDL_QUIT) {
+        while (SDL_PollEvent(&AppEvent)) {
+            if (AppEvent.type == SDL_QUIT) {
                 is_running = false;
+            } 
+            else if(AppEvent.type == SDL_KEYDOWN) {
+                if (AppEvent.key.keysym.sym == SDLK_e) {
+                    state.isErasing = !state.isErasing;
+                }
             }
-        } else if(AppEvent.type == SDL_KEYDOWN) {
-            if (AppEvent.key.keysym.sym == SDLK_e) {
-                appState.isErasing = !appState.isErasing;
+            else if (AppEvent.type == SDL_MOUSEBUTTONDOWN) {
+                int mx = AppEvent.button.x;
+                int my = AppEvent.button.y;
+
+                if (mx >= btnColor.buttonBox.x && mx <= btnColor.buttonBox.x + btnColor.buttonBox.w &&
+                    my >= btnColor.buttonBox.y && my <= btnColor.buttonBox.y + btnColor.buttonBox.h) {
+                    // Color button clicked
+                    int r, g, b;
+                    printf("Current Color: (%d, %d, %d)\n", state.currColor.r, state.currColor.g, state.currColor.b);
+                    printf("Enter new RGB values (0-255) separated by spaces (e.g., 255 0 0): ");
+                    
+                    if (scanf("%d %d %d", &r, &g, &b) == 3) {
+                        state.currColor.r = (Uint8)r;
+                        state.currColor.g = (Uint8)g;
+                        state.currColor.b = (Uint8)b;
+                        state.previewColor = state.currColor;
+                    } else {
+                        printf("Invalid input. Color not changed.\n");
+                    }
+                } else if (mx >= btnErase.buttonBox.x && mx <= btnErase.buttonBox.x + btnErase.buttonBox.w &&
+                           my >= btnErase.buttonBox.y && my <= btnErase.buttonBox.y + btnErase.buttonBox.h) {
+                    state.isErasing = !state.isErasing;
+                } else {
+                    // Start drawing
+                    state.isDrawing = true;
+                    state.mouseX = mx;
+                    state.mouseY = my;
+                }
             }
+            else if (AppEvent.type == SDL_MOUSEBUTTONUP) {
+                state.isDrawing = false;
+            }
+            else if (AppEvent.type == SDL_MOUSEMOTION) {
+                if (state.isDrawing) {
+                    int mx = AppEvent.motion.x;
+                    int my = AppEvent.motion.y;
+                    SDL_Color drawColor = state.isErasing ? (SDL_Color){255, 255, 255, 255} : state.currColor;
+                    
+                    drawLine(renderer, state.mouseX, state.mouseY, mx, my, drawColor);
+                    
+                    state.mouseX = mx;
+                    state.mouseY = my;
+                    SDL_RenderPresent(renderer);
+                }
+            } 
         }
+        SDL_SetRenderDrawColor(renderer, btnColor.buttonColor.r, btnColor.buttonColor.g, btnColor.buttonColor.b, 255);
+        SDL_RenderFillRect(renderer, &btnColor.buttonBox);
 
-        else if (AppEvent.type == SDL_MOUSEBUTTONDOWN) {
-            int mx = AppEvent.button.x;
-            int my = AppEvent.button.y;
-
-            if (mx >= btnColor.buttonBox.x && mx <= btnColor.buttonBox.x + btnColor.buttonBox.w &&
-                my >= btnColor.buttonBox.y && my <= btnColor.buttonBox.y + btnColor.buttonBox.h) {
-                // Color button clicked
-               int r, g, b;
-               printf("Current Color: (%d, %d, %d)\n", state.currentColor.r, state.currentColor.g, state.currentColor.b);
-               printf("Enter new RGB values (0-255) separated by spaces (e.g., 255 0 0): ");
-               if (scanf("%d %d %d", &r, &g, &b) == 3) {
-                   state.currentColor.r = (Uint8)r;
-                   state.currentColor.g = (Uint8)g;
-                   state.currentColor.b = (Uint8)b;
-                   state.previewColor = state.currentColor;
-               } else {
-                   printf("Invalid input. Color not changed.\n");
-               }
-            } else if (mx >= btnErase.buttonBox.x && mx <= btnErase.buttonBox.x + btnErase.buttonBox.w &&
-                       my >= btnErase.buttonBox.y && my <= btnErase.buttonBox.y + btnErase.buttonBox.h) {
-                state.isErasing = !state.isErasing;
-            } else {
-                // Start drawing
-                state.isDrawing = true;
-                state.mouseX = mx;
-                state.mouseY = my;
-            }
+        SDL_SetRenderDrawColor(renderer, btnErase.buttonColor.r, btnErase.buttonColor.g, btnErase.buttonColor.b, 255);
+        SDL_RenderFillRect(renderer, &btnErase.buttonBox);
         
-        // RENDERING CODE HERE
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderClear(renderer);
         SDL_RenderPresent(renderer);
     }
 
+    SDL_DestroyTexture(canvasTexture);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
