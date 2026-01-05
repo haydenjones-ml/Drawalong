@@ -96,7 +96,15 @@ int main(int argc, char* argv[]) {
                } else {
                    printf("Invalid input. Color not changed.\n");
                }
-        }
+            } else if (mx >= btnErase.buttonBox.x && mx <= btnErase.buttonBox.x + btnErase.buttonBox.w &&
+                       my >= btnErase.buttonBox.y && my <= btnErase.buttonBox.y + btnErase.buttonBox.h) {
+                state.isErasing = !state.isErasing;
+            } else {
+                // Start drawing
+                state.isDrawing = true;
+                state.mouseX = mx;
+                state.mouseY = my;
+            }
         
         // RENDERING CODE HERE
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
