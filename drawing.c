@@ -16,6 +16,7 @@ typedef struct {
     bool isDrawing;
     bool isErasing;
     int mouseX, mouseY;
+    int brushSize;
 } appState;
 
 typedef struct {
@@ -26,9 +27,9 @@ typedef struct {
 
 // Calculate line interpolation for drawing
 // Potential TODO: Implement Bresenham's line algorithm by hand? Might be fun and faster for later.
-void drawLine(SDL_Renderer* renderer, int x1, int y1, int x2, int y2, SDL_Color color) {
+void drawLine(SDL_Renderer* renderer, int x1, int y1, int x2, int y2, int size, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
+    
 }
 
 int main(int argc, char* argv[]) {
@@ -120,7 +121,7 @@ int main(int argc, char* argv[]) {
                     int my = AppEvent.motion.y;
                     SDL_Color drawColor = state.isErasing ? (SDL_Color){255, 255, 255, 255} : state.currColor;
                     
-                    drawLine(renderer, state.mouseX, state.mouseY, mx, my, drawColor);
+                    drawLine(renderer, state.mouseX, state.mouseY, mx, my, state.brushSize, drawColor);
                     
                     state.mouseX = mx;
                     state.mouseY = my;
