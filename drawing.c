@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -89,6 +90,8 @@ int main(int argc, char* argv[]) {
                     int r, g, b;
                     printf("Current Color: (%d, %d, %d)\n", state.currColor.r, state.currColor.g, state.currColor.b);
                     printf("Enter new RGB values (0-255) separated by spaces (e.g., 255 0 0): ");
+
+                    // ^ TODO: Replace with prompt window? + preview within prompt window
                     
                     if (scanf("%d %d %d", &r, &g, &b) == 3) {
                         state.currColor.r = (Uint8)r;
