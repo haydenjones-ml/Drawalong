@@ -26,9 +26,22 @@ typedef struct {
 } UIButton;
 
 // Calculate line interpolation for drawing
-// Potential TODO: Implement Bresenham's line algorithm by hand? Might be fun and faster for later.
 void drawLine(SDL_Renderer* renderer, int x1, int y1, int x2, int y2, int size, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+    // Bresenham's line algo implementation
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+    float length = sqrtf(dx * dx + dy * dy);
+
+    float stepX = dx / length;
+    float stepY = dy / length;
+
+    for (float i = 0; i <= length; i += 1.0f) {
+        int drawX = (int)(x1 + stepX * i);
+        int drawY = (int)(y1 + stepY * i);
+        SDL_Rect brushRect = { drawX - size / 2, drawY - size / 2, size, size };
+        SDL_RenderFillRect(renderer, &brushRect);
+    }
     
 }
 
@@ -70,6 +83,9 @@ int main(int argc, char* argv[]) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
     SDL_RenderPresent(renderer);
+
+    // Default brush size; can increment/decrement with keys -/+ respectively
+    state.brushSize = 5;
 
     while (is_running) {
         while (SDL_PollEvent(&AppEvent)) {
