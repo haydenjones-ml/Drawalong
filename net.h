@@ -1,8 +1,8 @@
 #ifndef NET_H
 #define NET_H
 
-#include <WinSock2.h>
-#include <WS2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -20,8 +20,8 @@ bool net_system_init();
 void net_system_cleanup();
 SOCKET net_init_host(const char* port);
 SOCKET net_init_client(const char* host, const char* port);
-int net_send_packet(SOCKET socket, Packet* packet);
-int net_receive_packet(SOCKET socket, Packet* packet);
+void net_send_packet(SOCKET socket, Packet* packet);
+bool net_receive_packet(SOCKET socket, Packet* packet);
 void net_close_socket(SOCKET socket);
 
 #endif

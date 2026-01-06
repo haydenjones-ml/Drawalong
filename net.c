@@ -47,17 +47,23 @@ SOCKET net_init_client(const char* host, const char* port) {
 
     for(p = servinfo; p != NULL; p = p->ai_next) {
         sockFD = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-        if(connect(sockFD, p->ai_addr, (int)p->ai_addrlen) == 0) {
+        if (sockFD == INVALID_SOCKET) continue;
+
+        if(connect(sockFD, p->ai_addr, (int)p->ai_addrlen) == -1) {
             closesocket(sockFD);
             sockFD = INVALID_SOCKET;
+            continue;
         }
-        freeaddrinfo(servinfo);
-        return sockFD;
+        break;
     }
+    freeaddrinfo(servinfo);
+    return sockFD;
 }
+
 void net_send_packet(SOCKET socket, Packet* packet) {
     send(socket, (const char*)packet, sizeof(Packet), 0);
 }
+
 bool net_receive_packet(SOCKET socket, Packet* out_packet) {
     fd_set readfds;
     struct timeval tv = {0, 0};
