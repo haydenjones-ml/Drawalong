@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <math.h>
 
-const int WINDOW_WIDTH = 800;
-const int WINDOW_HEIGHT = 600;
+const int WINDOW_WIDTH = 1280;
+const int WINDOW_HEIGHT = 720;
 
 const int BUTTON_WIDTH = 50;
 const int BUTTON_HEIGHT = 100;
