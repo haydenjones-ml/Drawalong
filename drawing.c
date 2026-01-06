@@ -65,10 +65,10 @@ int main(int argc, char* argv[]) {
         netSocket = net_init_host("1234");
     } else if (role == 'c'){
         char address[64];
-        printf("Enter host address (default = 1234): ");
+        printf("Enter host address (ask host for system IP address!): ");
         scanf("%s", address);
         if(strlen(address) > 0) strcpy(ip, address);
-        netSocket = net_init_client(ip, "1234");
+        netSocket = net_init_client(ip, address);
     } else {
         printf("Invalid role selection. Exiting.\n");
         return -1;
