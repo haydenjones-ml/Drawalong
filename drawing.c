@@ -62,8 +62,6 @@ int main(int argc, char* argv[]) {
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    
-    // Note: You created this texture but are currently drawing directly to the renderer in the loop below.
     SDL_Texture *canvasTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     if (NULL == renderer) {
@@ -95,6 +93,12 @@ int main(int argc, char* argv[]) {
             else if(AppEvent.type == SDL_KEYDOWN) {
                 if (AppEvent.key.keysym.sym == SDLK_e) {
                     state.isErasing = !state.isErasing;
+                } else if (AppEvent.key.keysym.sym == SDLK_PLUS || AppEvent.key.keysym.sym == SDLK_EQUALS) {
+                    state.brushSize += 1;
+                    if (state.brushSize > 50) state.brushSize = 50;
+                } else if (AppEvent.key.keysym.sym == SDLK_MINUS || AppEvent.key.keysym.sym == SDLK_UNDERSCORE) {
+                    state.brushSize -= 1;
+                    if (state.brushSize < 1) state.brushSize = 1;
                 }
             }
             else if (AppEvent.type == SDL_MOUSEBUTTONDOWN) {
