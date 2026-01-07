@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     } else if (role == 'c'){
         char address[64];
         printf("Enter host address (ask host for system IPv4 address!): ");
-        scanf("%s", address);
+        scanf("%63s", address);
         if(strlen(address) > 0) strcpy(ip, address);
         netSocket = net_init_client(ip, address);
     } else {
