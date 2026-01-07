@@ -59,16 +59,29 @@ int main(int argc, char* argv[]) {
     SOCKET netSocket = INVALID_SOCKET;
     char role; // 'h' = host, 'c' = client
     char ip[64] = "127.0.0.1"; // default to localhost
-    printf("Welcome to Drawalong!\n Please select your role (Type 'h' for host, 'c' for client): ");
+    printf("Welcome to Drawalong!\n Please select your role (Type 'h' for host, 'c' for client, 'o' for offline mode): ");
     scanf(" %c", &role);
     if (role == 'h'){
         netSocket = net_init_host("1234");
     } else if (role == 'c'){
-        char address[64];
+        char port[6] = "1234";
         printf("Enter host address (ask host for system IPv4 address!): ");
-        scanf("%63s", address);
-        if(strlen(address) > 0) strcpy(ip, address);
-        netSocket = net_init_client(ip, address);
+        scanf("%63s", port);
+        if (netSocket == INVALID_SOCKET) {
+            netSocket = net_init_client(ip, port);
+            if (netSocket == INVALID_SOCKET) {
+                printf("Failed to connect to host.\n");
+                printf("Exiting program...\n");
+                net_system_cleanup();
+                Sleep(2000);
+                return -1;
+            }
+            printf("Success! Connected to host at %s:%s\n", ip, port);
+        }
+
+    } else if (role == 'o') {
+        printf("Offline mode selected. No networking will be used.\n");
+        
     } else {
         printf("Invalid role selection. Exiting.\n");
         return -1;
