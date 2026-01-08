@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     net_system_init();
     SOCKET netSocket = INVALID_SOCKET;
     char role; // 'h' = host, 'c' = client
-    char ip[64] = "127.0.0.1"; // default to localhost
+    char ip[64]; // default to localhost
     printf("Welcome to Drawalong!\n Please select your role (Type 'h' for host, 'c' for client, 'o' for offline mode): ");
     scanf(" %c", &role);
     if (role == 'h'){
